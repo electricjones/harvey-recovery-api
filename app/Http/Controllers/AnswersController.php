@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Tracker\Answers\SheetsJsonFeedBuilder;
 
 /**
- * Class AnswersController
+ * Answers Controller
+ *
+ * Endpoints related to updating answers from the spreadsheet
+ *
  * @package App\Http\Controllers
  */
 class AnswersController
@@ -15,7 +18,7 @@ class AnswersController
     public function update()
     {
         $builder = new SheetsJsonFeedBuilder();
-        $builder->setSheetId('1veKJ6xSapEzxJ2nOqGrsMplWHMSt_KSvunGE-uii43s');
+        $builder->setSheetId(env('GSHEET_ID'));
         $builder->updateJsonFile(storage_path('content.en.json'));
 
         return response('Updated', 200);
