@@ -8,6 +8,7 @@ namespace App\Tracker\User;
 class UserRepository
 {
     /**
+     * Creates the user if the user does not already exist
      * @param string $phone
      * @param string $email
      * @param integer $tenant

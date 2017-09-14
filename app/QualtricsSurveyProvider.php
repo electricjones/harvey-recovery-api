@@ -8,12 +8,10 @@ namespace App;
 class QualtricsSurveyProvider
 {
     /**
-     * QualtricsSurveyProvider constructor.
+     * Turns the url-encoded request into a usable array of responses
+     * @param $request
+     * @return mixed
      */
-    public function __construct()
-    {
-    }
-
     public function parseRequest($request)
     {
         $decoded = urldecode($request);

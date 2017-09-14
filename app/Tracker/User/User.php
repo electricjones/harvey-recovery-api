@@ -17,6 +17,11 @@ class User extends Model
 {
     protected $guarded = ['id'];
 
+    /**
+     * Creates the user's unique hash
+     * @param $input
+     * @return string
+     */
     public static function makeHash($input)
     {
         return sha1($input);
