@@ -38,7 +38,7 @@ class SurveyController extends Controller
     {
         /* Turn the response into a usable array */
         $responses = $this->parseResponses($request->getContent());
-
+mail('chrismichaels84@gmail.com', 'Testing', 'testing');
         /* Build the Survey and User */
         try {
             $phone = $this->parsePhoneNumber($responses['phone']);
