@@ -8,6 +8,7 @@ use App\Tracker\User\User;
 use App\Tracker\User\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use function PHPSTORM_META\map;
 
 /**
  * Survey Controller
@@ -38,7 +39,7 @@ class SurveyController extends Controller
     {
         /* Turn the response into a usable array */
         $responses = $this->parseResponses($request->getContent());
-mail('chrismichaels84@gmail.com', 'Testing', 'testing');
+
         /* Build the Survey and User */
         try {
             $phone = $this->parsePhoneNumber($responses['phone']);
@@ -55,7 +56,7 @@ mail('chrismichaels84@gmail.com', 'Testing', 'testing');
             $message = $this->buildMessage($user->hash);
             $message = wordwrap($message, 70, "\r\n");
             mail($responses['email'], 'Personalized Status', $message);
-
+            mail('chrismichaels84@gmail.com', 'Still Testing', 'still testing' . $responses['email'] . $message);
             /* Return an All Clear to the API */
             return response($message, 200);
 
