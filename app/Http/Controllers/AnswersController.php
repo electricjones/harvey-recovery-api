@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Tracker\Answers\SheetsJsonFeedBuilder;
+use Illuminate\Http\Response;
 
 /**
  * Answers Controller
@@ -13,7 +14,7 @@ use App\Tracker\Answers\SheetsJsonFeedBuilder;
 class AnswersController
 {
     /**
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function update()
     {

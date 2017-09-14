@@ -7,38 +7,51 @@ use App\Tracker\Survey\SurveyRepository;
 use App\Tracker\User\User;
 use Illuminate\Support\Facades\App;
 
+/**
+ * Dashboard Controller
+ *
+ * Controller for the personalized dashboard
+ *
+ * @package App\Http\Controllers
+ */
 class DashboardController extends Controller
 {
     /**
-     * Displays the user's answers and profiles
-     * @param $hash
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Displays the user's answers and profile
+     * @param string $hash
+     * @return \Illuminate\View\View
      */
     public function show($hash)
     {
+        /* First, we update the answers from the google sheet */
+        // @todo: only do this temporarily, until we setup the update on a schedule
         $builder = new SheetsJsonFeedBuilder();
-        $builder->setSheetId('1veKJ6xSapEzxJ2nOqGrsMplWHMSt_KSvunGE-uii43s');
+        $builder->setSheetId(env('GSHEET_ID'));
         $builder->updateJsonFile(storage_path('content.en.json'));
 
+        /* Grab the User */
         /** @var User $user */
         $user = User::where('hash', $hash)->first();
-
         if (!$user) {
+            // Show a 404 if we don't have that user
             App::abort(404);
         }
 
+        /* Find that user's latest survey */
         $survey = (new SurveyRepository())->latestForUser($user);
-
         if (!$survey) {
+            // Show a 404 if we don't have a survey
             App::abort(404);
         }
 
+        /* Build the data for the view */
         $data = [
             'user' => $user,
             'survey' => $survey,
             'user_hash' => $hash,
         ];
 
+        // Build the content for the sections
         $data = array_merge(
             $data,
             DashboardService::buildContent(
@@ -48,11 +61,12 @@ class DashboardController extends Controller
             )
         );
 
-        // Build the answers section
+        // Build the "answers" section
         foreach (json_decode($data['survey']->responses) as $question => $response) {
             $data['answers'][$question] = $response;
         }
 
+        // cleanup and remove some of the answers
         $rekey = [
             'street-address' => false,
             'city' => false,
@@ -73,6 +87,7 @@ class DashboardController extends Controller
             }
         }
 
+        /* Return the view */
         return view('dashboard', $data);
     }
 }

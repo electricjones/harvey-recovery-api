@@ -4,45 +4,30 @@ namespace App\Http\Controllers;
 use App\QualtricsSurveyProvider;
 use App\Tracker\Messaging\SMSServiceInterface;
 use App\Tracker\Survey\SurveyRepository;
+use App\Tracker\User\User;
 use App\Tracker\User\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
+/**
+ * Survey Controller
+ *
+ * Manages Surveys as a Resource
+ *
+ * @package App\Http\Controllers
+ */
 class SurveyController extends Controller
 {
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created surveys
      *
      * @param  \Illuminate\Http\Request $request
      * @param UserRepository $user_repo
      * @param SurveyRepository $survey_repo
      * @param SMSServiceInterface $sms
-     * @return array
-     * @throws \Exception
-     *
-     * @todo: refactor and cleanup
-     *    - Move classes
-     *    - Docblocks and inline docs
-     *    - Refactor to SOLID
-     *
-     * @todo: open source
-     *    - move to github repo
-     *    - work out environment variables
-     *    - find a workflow for the design
-     *    - connect aws to my github
-     *    - documentation and readme
-     *
-     * @todo: first time -> user.first_time
-     * @todo: finish checkboxes and undo boxes -> user.meta -> {'done':['some-id','some-other-id']}
-     *
-     * @todo: integrate with mailgun
-     * @todo: build email message from dashboard view
-     *
-     * @todo: make sure I can handle international phone numbers (only matters for SMS)
-     *
-     * @todo: holding us back from actual business
-     *      - Integrated question and answers workflow
-     *      - Setting up the PushToApi call
+     * @return Response
+     * @throws \Exception if the POST failed
      */
     public function store(
         Request $request,
@@ -51,29 +36,27 @@ class SurveyController extends Controller
         SMSServiceInterface $sms
     )
     {
+        /* Turn the response into a usable array */
         $responses = $this->parseResponses($request->getContent());
 
+        /* Build the Survey and User */
         try {
-            $phone = $this->getPhoneNumber($responses['phone']);
+            $phone = $this->parsePhoneNumber($responses['phone']);
             $email = $responses['email'];
-            $tenant = 1; // @todo: expand and pull from survey when there are more tenants
+            $tenant = 1; // For now, we only have one tenant
 
-            $user = \DB::transaction(function () use ($user_repo, $survey_repo, $responses, $phone, $email, $tenant) {
-                $user = $user_repo->addIfNeeded($phone, $email, $tenant);
-                $survey_repo->addFromSurveyResponses($responses, $user->id);
+            // Handle this in a transaction
+            $user = \DB::transaction(
+                $this->saveSurvey($user_repo, $survey_repo, $responses, $phone, $email, $tenant)
+            );
 
-                return $user; // @todo: make sure this returns
-            });
+            /* Send the Response Link */
+            // This is a temporary band-aid until we use a real service provider
+            $message = $this->buildMessage($user->hash);
+            $message = wordwrap($message, 70, "\r\n");
+            mail($responses['email'], 'Personalized Status', $message);
 
-            // Create Twilio Response
-            $message = $this->getMessage($user->hash);
-//            \Mail::to($responses['email'])->send(new DashboardEmailLink($message));
-//            $sms->send($phone, $message);
-
-//// @todo: use an actual service provider
-$message = wordwrap($message, 70, "\r\n");
-mail($responses['email'], 'Personalized Status', $message);
-
+            /* Return an All Clear to the API */
             return response($message, 200);
 
         } catch (\Exception $e) {
@@ -83,28 +66,53 @@ mail($responses['email'], 'Personalized Status', $message);
     }
 
     /**
+     * Creates the message to be sent to the user
      * @param $user_id
      * @return string
      */
-    private function getMessage($user_id)
+    protected function buildMessage($user_id)
     {
         $site = \Config::get('sms.DASHBOARD_SITE_URL');
         return "Follow this link to your Recovery Status page: {$site}users/{$user_id}";
     }
 
-    function getPhoneNumber ($str) {
-        preg_match_all('/\d+/', $str, $matches);
+    /**
+     * Extracts all the non-number digits from the phone number
+     * @param string $phone
+     * @return string
+     */
+    protected function parsePhoneNumber ($phone) {
+        preg_match_all('/\d+/', $phone, $matches);
         return implode("", $matches[0]);
     }
 
     /**
+     * Cleans up the Survey Responses into a standard array
      * @param string $request
      * @return array
      */
     protected function parseResponses($request)
     {
-        // @todo: intelligently figure out which provider, as more providers are added
         $provider = new QualtricsSurveyProvider();
         return $provider->parseRequest($request);
+    }
+
+    /**
+     * The callback for the Transaction that actually stores the user
+     *
+     * @param UserRepository $user_repo
+     * @param SurveyRepository $survey_repo
+     * @param array $responses
+     * @param string $phone
+     * @param string $email
+     * @param int $tenant
+     * @return User
+     */
+    protected function saveSurvey(UserRepository $user_repo, SurveyRepository $survey_repo, $responses, $phone, $email, $tenant)
+    {
+        $user = $user_repo->addIfNeeded($phone, $email, $tenant);
+        $survey_repo->addFromSurveyResponses($responses, $user->id);
+
+        return $user;
     }
 }
