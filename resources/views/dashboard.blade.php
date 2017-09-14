@@ -6,20 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Harvey Recovery Status</title>
     <link rel="stylesheet" href="/css/main.css">
-
-    {{--<!--BEGIN QUALTRICS SITE INTERCEPT-->--}}
-    {{--<script type='text/javascript'>--}}
-    {{--(function(){var g=function(e,h,f,g){--}}
-    {{--this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};--}}
-    {{--this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};--}}
-    {{--this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};--}}
-    {{--this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g+ "&t=" + (new Date()).getTime();document.body&&document.body.appendChild(a)}};--}}
-    {{--this.start=function(){var a=this;window.addEventListener?window.addEventListener("load",function(){a.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){a.go()})}};--}}
-    {{--try{(new g(100,"r","QSI_S_SI_3k3S1K5poTsn2N7","https://zn8cdkedmenkpw5ox-houston.siteintercept.qualtrics.com/WRSiteInterceptEngine/?Q_SIID=SI_3k3S1K5poTsn2N7&Q_LOC="+encodeURIComponent(window.location.href))).start()}catch(i){}})();--}}
-    {{--</script>--}}
-    {{--<div id='SI_3k3S1K5poTsn2N7'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>--}}
-
-    {{--<!--END SITE INTERCEPT-->--}}
 </head>
 <body>
 <header class="tracker__header">
@@ -45,9 +31,6 @@
             </div>
             <div id="intro" class="tracker__section"><p>Hi,</p>
                 <p>Thanks for completing the survey, designed to deliver just the info you need.</p>
-                <p>Since it’s your first time, please confirm that your area has been declared for FEMA assistance. FEMA
-                    is the Federal Emergency Management Agency. When the President makes a Declaration of Disaster, FEMA
-                    administers relief for individuals and business owners who sustained damage and&nbsp;losses.</p>
             </div>
             <div id="what-to-do" class="tracker__section"><h2>Do</h2>
                 <ol id="to-do-list" class="tracker__list">
