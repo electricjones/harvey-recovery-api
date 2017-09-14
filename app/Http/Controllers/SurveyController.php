@@ -45,24 +45,28 @@ class SurveyController extends Controller
             $phone = $this->parsePhoneNumber($responses['phone']);
             $email = $responses['email'];
             $tenant = 1; // For now, we only have one tenant
-mail('chrismichaels84@gmail.com', 'Still Testing', 'still testing' . $responses['email']);
 
             // Handle this in a transaction
-            $user = \DB::transaction(
-                $this->saveSurvey($user_repo, $survey_repo, $responses, $phone, $email, $tenant)
-            );
+            $user = \DB::transaction(function () use ($user_repo, $survey_repo, $responses, $phone, $email, $tenant) {
+                $user = $user_repo->addIfNeeded($phone, $email, $tenant);
+                $survey_repo->addFromSurveyResponses($responses, $user->id);
+
+                return $user; // @todo: make sure this returns
+            });
 
             /* Send the Response Link */
             // This is a temporary band-aid until we use a real service provider
             $message = $this->buildMessage($user->hash);
             $message = wordwrap($message, 70, "\r\n");
             mail($responses['email'], 'Personalized Status', $message);
+
             /* Return an All Clear to the API */
             return response($message, 200);
 
         } catch (\Exception $e) {
             \Log::warning("Post Failed for survey " . json_encode($responses));
-mail('chrismichaels84@gmail.com', 'Wrong', $e->getMessage());
+            mail('chrismichaels84@gmail.com', 'Wrong', $e->getMessage()); // @todo: for now
+
             throw $e;
         }
     }
@@ -97,24 +101,5 @@ mail('chrismichaels84@gmail.com', 'Wrong', $e->getMessage());
     {
         $provider = new QualtricsSurveyProvider();
         return $provider->parseRequest($request);
-    }
-
-    /**
-     * The callback for the Transaction that actually stores the user
-     *
-     * @param UserRepository $user_repo
-     * @param SurveyRepository $survey_repo
-     * @param array $responses
-     * @param string $phone
-     * @param string $email
-     * @param int $tenant
-     * @return User
-     */
-    protected function saveSurvey(UserRepository $user_repo, SurveyRepository $survey_repo, $responses, $phone, $email, $tenant)
-    {
-        $user = $user_repo->addIfNeeded($phone, $email, $tenant);
-        $survey_repo->addFromSurveyResponses($responses, $user->id);
-
-        return $user;
     }
 }
