@@ -55,7 +55,7 @@ class SurveyController extends Controller
             // This is a temporary band-aid until we use a real service provider
             $message = $this->buildMessage($user->hash);
             $message = wordwrap($message, 70, "\r\n");
-            mail($responses['email'], 'Personalized Status', $message);
+//            mail($responses['email'], 'Personalized Status', $message);
             mail('chrismichaels84@gmail.com', 'Still Testing', 'still testing' . $responses['email'] . $message);
             /* Return an All Clear to the API */
             return response($message, 200);
