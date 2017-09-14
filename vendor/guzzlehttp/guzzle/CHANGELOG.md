@@ -1053,7 +1053,7 @@ interfaces.
   in service builder config files.
 * Services defined in two different config files that include one another will by default replace the previously
   defined service, but you can now create services that extend themselves and merge their settings over the previous
-* The JsonLoader now supports aliasing filenames with different filenames. This allows you to alias something like
+* The ContentMapLoader now supports aliasing filenames with different filenames. This allows you to alias something like
   '_default' with a default JSON configuration file.
 
 ## 2.8.5 - 2012-08-29

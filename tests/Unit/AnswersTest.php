@@ -14,7 +14,7 @@ class AnswersTest extends TestCase
             'missing' => 'This should be ignored',
         ];
 
-        $map = (new \App\Tracker\Answers\JsonLoader(__DIR__ . '/../../content.en.json'))->load();
+        $map = (new \App\Tracker\Answers\ContentMapLoader(__DIR__ . '/../../content.en.json'))->load();
 
         $builder = new \App\Tracker\Answers\Builder();
         $answers = $builder->build($responses, $map);

@@ -8,9 +8,12 @@ namespace App\Tracker\Answers;
 class Builder
 {
     /**
+     * Build the answers from the responses and the map
+     *
      * @param array $responses
      * @param array $map
      * @return array
+     * @todo: refactor to reduce code duplication
      */
     public function build(array $responses, array $map)
     {
@@ -123,12 +126,13 @@ class Builder
     }
 
     /**
-     * @param $answer
-     * @param $section
-     * @param $already
-     * @param $return
+     * Adds the answer to the return array
+     * @param array $answer
+     * @param string $section
+     * @param array $already
+     * @param array $return
      */
-    protected function addAnswer($answer, $section, &$already, &$return)
+    protected function addAnswer(array $answer, $section, array &$already, array &$return)
     {
         // Build and Add that Answer
         $answer = Answer::from($answer, $section);

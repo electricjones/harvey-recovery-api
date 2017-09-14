@@ -1,6 +1,7 @@
 <?php
 namespace App\Tracker\Answers;
 
+use App\Tracker\Answers\Handlers\HtmlHandler;
 
 /**
  * Class Answer
@@ -20,10 +21,12 @@ class Answer implements \JsonSerializable
     /** @var string */
     protected $section;
 
-    public function __construct()
-    {
-    }
-
+    /**
+     * Factory to create Answer from the json blcok
+     * @param array $given
+     * @param string $section
+     * @return Answer
+     */
     public static function from(array $given, $section)
     {
         $answer = new Answer();
@@ -35,14 +38,6 @@ class Answer implements \JsonSerializable
         $answer->setHandler(new HtmlHandler());
 
         return $answer;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return call_user_func($this->handler, $this);
     }
 
     /**
@@ -119,5 +114,13 @@ class Answer implements \JsonSerializable
     function jsonSerialize()
     {
         return (string) $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return call_user_func($this->handler, $this);
     }
 }

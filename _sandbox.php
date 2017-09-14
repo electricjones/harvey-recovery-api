@@ -1,7 +1,7 @@
 <?php
 
 use App\Tracker\Answers\Builder;
-use App\Tracker\Answers\JsonLoader;
+use App\Tracker\Answers\ContentMapLoader;
 use App\Tracker\Answers\SheetsJsonFeedBuilder;
 
 require 'vendor/autoload.php';

@@ -1,5 +1,7 @@
 <?php
-namespace App\Tracker\Answers;
+namespace App\Tracker\Answers\Handlers;
+
+use App\Tracker\Answers\Answer;
 
 /**
  * Class HandlerInterface
@@ -8,6 +10,7 @@ namespace App\Tracker\Answers;
 interface HandlerInterface
 {
     /**
+     * This class is callable. It will return the markup for the answer
      * @param Answer $answer
      * @return string
      */
