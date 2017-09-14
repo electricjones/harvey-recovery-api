@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\SMSServiceInterface;
-use App\TwilioSMSClient;
+use App\Tracker\Messaging\SMSServiceInterface;
+use App\Tracker\Messaging\TwilioSMSClient;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,7 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // @todo: tie to ENV
         app()->bind(SMSServiceInterface::class, TwilioSMSClient::class);
     }
 }

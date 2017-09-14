@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,4 +15,8 @@ use Illuminate\Http\Request;
 //    return $request->user();
 //});
 
-Route::post('/surveys', 'SurveyController@store');
+Route::any('/surveys', 'SurveyController@store');
+
+Route::any('/surveys2', 'SurveyController@store_old');
+
+

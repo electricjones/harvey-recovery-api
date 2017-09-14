@@ -1,15 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\DashboardService;
-use App\SMSServiceInterface;
-use App\SurveyRepository;
-use App\User;
-use App\UserRepository;
+use App\QualtricsSurveyProvider;
+use App\Tracker\Messaging\SMSServiceInterface;
+use App\Tracker\Survey\SurveyRepository;
+use App\Tracker\User\UserRepository;
 use Illuminate\Http\Request;
 
 class SurveyController extends Controller
 {
+
     /**
      * Store a newly created resource in storage.
      *
@@ -19,11 +19,30 @@ class SurveyController extends Controller
      * @param SMSServiceInterface $sms
      * @return array
      * @throws \Exception
-     * @todo: Write this for the actual response from the api
-     * @todo: integrate this with twilio
      *
-     * @todo: make this more abstractable
-     * @todo: make sure I can handle international phone numbers
+     * @todo: refactor and cleanup
+     *    - Move classes
+     *    - Docblocks and inline docs
+     *    - Refactor to SOLID
+     *
+     * @todo: open source
+     *    - move to github repo
+     *    - work out environment variables
+     *    - find a workflow for the design
+     *    - connect aws to my github
+     *    - documentation and readme
+     *
+     * @todo: first time -> user.first_time
+     * @todo: finish checkboxes and undo boxes -> user.meta -> {'done':['some-id','some-other-id']}
+     *
+     * @todo: integrate with mailgun
+     * @todo: build email message from dashboard view
+     *
+     * @todo: make sure I can handle international phone numbers (only matters for SMS)
+     *
+     * @todo: holding us back from actual business
+     *      - Integrated question and answers workflow
+     *      - Setting up the PushToApi call
      */
     public function store(
         Request $request,
@@ -32,26 +51,33 @@ class SurveyController extends Controller
         SMSServiceInterface $sms
     )
     {
-        try {
-            $phone = $request->input('phone');
-            $user_id = User::makeId($phone);
+        $responses = $this->parseResponses($request->getContent());
 
-            \DB::transaction(function () use ($user_id, $user_repo, $survey_repo, $request) {
-                $survey = $survey_repo->addFromSurveyResponses($request->all(), $user_id);
-                $user_repo->addFromSurveyResponses(
-                    $user_id,
-                    $request->all(),
-                    DashboardService::buildContent($survey)
-                );
+        try {
+            $phone = $this->getPhoneNumber($responses['phone']);
+            $email = $responses['email'];
+            $tenant = 1; // @todo: expand and pull from survey when there are more tenants
+
+            $user = \DB::transaction(function () use ($user_repo, $survey_repo, $responses, $phone, $email, $tenant) {
+                $user = $user_repo->addIfNeeded($phone, $email, $tenant);
+                $survey_repo->addFromSurveyResponses($responses, $user->id);
+
+                return $user; // @todo: make sure this returns
             });
 
             // Create Twilio Response
-            $message = $this->getMessage($user_id);
-            $sms->send($phone, $message);
+            $message = $this->getMessage($user->hash);
+//            \Mail::to($responses['email'])->send(new DashboardEmailLink($message));
+//            $sms->send($phone, $message);
 
-            return response($message, 200);  // @todo: does the pusher require a specific response?
+//// @todo: use an actual service provider
+$message = wordwrap($message, 70, "\r\n");
+mail($responses['email'], 'Personalized Status', $message);
+
+            return response($message, 200);
+
         } catch (\Exception $e) {
-            \Log::warning("Post Failed for survey " . json_encode($request->all()));
+            \Log::warning("Post Failed for survey " . json_encode($responses));
             throw $e;
         }
     }
@@ -62,15 +88,23 @@ class SurveyController extends Controller
      */
     private function getMessage($user_id)
     {
-        $site = env('DASHBOARD_SITE_URL');
-        return "Thank you for answering those questions. You can find your personalized Recovery Tracker at {$site}/users/{$user_id}";
+        $site = \Config::get('sms.DASHBOARD_SITE_URL');
+        return "Follow this link to your Recovery Status page: {$site}users/{$user_id}";
+    }
+
+    function getPhoneNumber ($str) {
+        preg_match_all('/\d+/', $str, $matches);
+        return implode("", $matches[0]);
+    }
+
+    /**
+     * @param string $request
+     * @return array
+     */
+    protected function parseResponses($request)
+    {
+        // @todo: intelligently figure out which provider, as more providers are added
+        $provider = new QualtricsSurveyProvider();
+        return $provider->parseRequest($request);
     }
 }
-
-//<p>If you need help with routine and life-saving <strong>medical treatment or medicines</strong>, please see <a href="https://stationhouston.zendesk.com/hc/en-us/articles/115001801634" target="_blank">this resource</a> for trusted help.</p>
-//
-//<p>If you need <strong>immediate shelter</strong>, please use <a href="https://johnnyqbui.github.io/Houston-Shelters/" target="_blank">this map</a> to find shelters that are accepting people.</p>
-//
-//<p>If you need <strong>food for the long term</strong>, please <a href="http://www.houstonfoodbank.org/services/if-you-need-food" target="_blank">use this resource</a> to find local food banks.</p>
-//
-//<p>If <strong>your home is flooded</strong> the first thing you should do is <a href="https://stationhouston.zendesk.com/hc/en-us/articles/115001746874" target="_blank">register with FEMA</a>, even if you do not need housing. They will have disaster relief funds you may be entitled to. Next, please <a href="https://stationhouston.zendesk.com/hc/en-us/articles/115001820393" target="_blank">follow this guide</a> to begin the recovery process.</p>
