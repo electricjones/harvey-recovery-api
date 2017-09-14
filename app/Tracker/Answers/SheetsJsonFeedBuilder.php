@@ -5,7 +5,7 @@ namespace App\Tracker\Answers;
  * Class SheetsJsonFeedBuilder
  * @package App\Answers
  */
-class SheetsJsonFeedBuilder implements JsonBuilderInterface
+class SheetsJsonFeedBuilder
 {
     /** @var string */
     protected $sheet_id;
