@@ -1,10 +1,10 @@
 version: 0.0
 os: linux
 files:
-  - source: /app
-    destination: /var/www/phplaravel/app/
   - source: /bootstrap
     destination: /var/www/phplaravel/bootstrap/
+  - source: /app
+    destination: /var/www/phplaravel/app/
   - source: /config
     destination: /var/www/phplaravel/config/
   - source: /database
