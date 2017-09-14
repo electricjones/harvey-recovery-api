@@ -9,6 +9,11 @@ use App\Tracker\Answers\ContentMapLoader;
  */
 class DashboardService
 {
+    /**
+     * Builds the answers from the survey responses (using map)
+     * @param array $responses
+     * @return array
+     */
     public static function buildContent($responses)
     {
         $map = (new ContentMapLoader(storage_path('content.en.json')))->load();

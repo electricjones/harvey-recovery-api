@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Tracker\Messaging;
 
 use Illuminate\Bus\Queueable;
@@ -9,9 +8,8 @@ use Illuminate\Queue\SerializesModels;
 class DashboardEmailLink extends Mailable
 {
     use Queueable, SerializesModels;
-    /**
-     * @var
-     */
+
+    /** @var string */
     public $msg;
 
     /**

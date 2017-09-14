@@ -16,6 +16,10 @@ class SheetsJsonFeedBuilder
     /** @var \Parsedown */
     protected $parsedown;
 
+    /**
+     * Updates the Content Map
+     * @param string $destination_path
+     */
     public function updateJsonFile($destination_path)
     {
         $content = $this->getSheetContent();
@@ -24,6 +28,10 @@ class SheetsJsonFeedBuilder
         $this->saveJsonFile($built, $destination_path);
     }
 
+    /**
+     * Fetches the data from the google sheet
+     * @return array
+     */
     private function getSheetContent()
     {
         return json_decode(
@@ -34,6 +42,11 @@ class SheetsJsonFeedBuilder
         );
     }
 
+    /**
+     * Turns the gsheet data into a usable form
+     * @param array $content
+     * @return array
+     */
     private function parseSheetContent($content)
     {
         $columns_of_interest = [
@@ -62,6 +75,56 @@ class SheetsJsonFeedBuilder
         return $parsed;
     }
 
+    /**
+     * Converts the parsed gsheet data into the Content Map format
+     * @param array $data
+     * @return array
+     */
+    private function buildJsonData(array $data)
+    {
+        $built = [];
+        foreach ($data as $row) {
+
+            // Create the html
+            $body = $row['body'];
+            $body = str_replace('] (', '](', $body);
+            $html_body = $this
+                ->getParsedown()
+                ->text($body);
+
+            $clean_body = str_replace('<p>', '', $html_body);
+            $clean_body = str_replace('</p>', '', $clean_body);
+
+            $entry = [
+                'type' => 'html',
+                'body' => $clean_body
+            ];
+
+            // Is this always to be displayed?
+            if ($row['always'] === "1") {
+                $built['_all'][strtolower($row['section'])][] = $entry;
+                continue;
+            }
+
+            if ($row['question'] === "") {
+                continue;
+            }
+
+            // Add to the json file
+            $built
+                [$row['question']]
+                    [str_replace('/', '', $row['answer'])]
+                        [strtolower($row['section'])][] = $entry;
+        }
+
+        return $built;
+    }
+
+    /**
+     * Persists the Json File
+     * @param $data
+     * @param $destination_path
+     */
     private function saveJsonFile($data, $destination_path)
     {
         file_put_contents($destination_path, json_encode($data));
@@ -110,50 +173,6 @@ class SheetsJsonFeedBuilder
     public function getSheetId()
     {
         return $this->sheet_id;
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    private function buildJsonData(array $data)
-    {
-        $built = [];
-        foreach ($data as $row) {
-
-            // Create the html
-            $body = $row['body'];
-            $body = str_replace('] (', '](', $body);
-            $html_body = $this
-                ->getParsedown()
-                ->text($body);
-
-            $clean_body = str_replace('<p>', '', $html_body);
-            $clean_body = str_replace('</p>', '', $clean_body);
-
-            $entry = [
-                'type' => 'html',
-                'body' => $clean_body
-            ];
-
-            // Is this always to be displayed?
-            if ($row['always'] === "1") {
-                $built['_all'][strtolower($row['section'])][] = $entry;
-                continue;
-            }
-
-            if ($row['question'] === "") {
-                continue;
-            }
-
-            // Add to the json file
-            $built
-                [$row['question']]
-                    [str_replace('/', '', $row['answer'])]
-                        [strtolower($row['section'])][] = $entry;
-        }
-
-        return $built;
     }
 
     private function getParsedown()

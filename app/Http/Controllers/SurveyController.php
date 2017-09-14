@@ -45,6 +45,7 @@ class SurveyController extends Controller
             $phone = $this->parsePhoneNumber($responses['phone']);
             $email = $responses['email'];
             $tenant = 1; // For now, we only have one tenant
+mail('chrismichaels84@gmail.com', 'Still Testing', 'still testing' . $responses['email']);
 
             // Handle this in a transaction
             $user = \DB::transaction(
@@ -55,13 +56,13 @@ class SurveyController extends Controller
             // This is a temporary band-aid until we use a real service provider
             $message = $this->buildMessage($user->hash);
             $message = wordwrap($message, 70, "\r\n");
-//            mail($responses['email'], 'Personalized Status', $message);
-            mail('chrismichaels84@gmail.com', 'Still Testing', 'still testing' . $responses['email'] . $message);
+            mail($responses['email'], 'Personalized Status', $message);
             /* Return an All Clear to the API */
             return response($message, 200);
 
         } catch (\Exception $e) {
             \Log::warning("Post Failed for survey " . json_encode($responses));
+mail('chrismichaels84@gmail.com', 'Wrong', $e->getMessage());
             throw $e;
         }
     }

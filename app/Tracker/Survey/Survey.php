@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Tracker\Survey;
 
 use Illuminate\Database\Eloquent\Model;
