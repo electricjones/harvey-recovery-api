@@ -67,14 +67,14 @@ Route::get('/check', function () {
 });
 
 
-Route::get('/clear', function () {
-    foreach (\App\Tracker\Survey\Survey::all() as $survey) {
-        $survey->delete();
-    }
-
-    foreach (\App\Tracker\User\User::all() as $user) {
-        $user->delete();
-    }
-});
+//Route::get('/clear', function () {
+//    foreach (\App\Tracker\Survey\Survey::all() as $survey) {
+//        $survey->delete();
+//    }
+//
+//    foreach (\App\Tracker\User\User::all() as $user) {
+//        $user->delete();
+//    }
+//});
 
 
