@@ -5,7 +5,7 @@ A simple api to deliver personalized status reports for Hurricane Harvey recover
 ### Guidelines
 Contributions are **welcome** and will be fully **credited**.
 
-We accept contributions via Pull Requests on [Github](https://github.com/:vendor/:package_name).
+We accept contributions via Pull Requests on [Github](https://github.com/chrismichaels84/harvey-recovery-api).
 
 ### Pull Requests
 - **[PSR-2 Coding Standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md)** - Check the code style with ``$ composer check-style`` and fix it with ``$ composer fix-style``.
@@ -69,7 +69,7 @@ If you discover any security related issues, please email :author_email instead 
 
 ## Credits
 
-- [:author_name][link-author]
+- [Michael wilson][http://github.com/chrismichaels84]
 - [All Contributors][link-contributors]
 
 ## License
