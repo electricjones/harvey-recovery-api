@@ -67,6 +67,8 @@ class Builder
         foreach ($map as $question => $answer) {
             if (array_key_exists($question, $responses)) {
                 foreach ($answer as $condition => $sections) {
+
+                    // Check for number conditions
                     if (starts_with($condition, '>')) {
                         $given_number = (int) $responses[$question];
                         $check_against = (int) str_replace('>', '', $condition);

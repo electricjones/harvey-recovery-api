@@ -25,7 +25,9 @@ We accept contributions via Pull Requests on [Github](https://github.com/chrismi
 ### Running Tests
 
 ``` bash
-$ composer test
+$ cd laradock
+$ docker-compose exec workspace bash
+$ phpunit
 ```
 
 ### Setup Your Local Environment
