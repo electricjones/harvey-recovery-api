@@ -70,6 +70,7 @@ If you discover any security related issues, please email :author_email instead 
 ## Credits
 
 - [Michael wilson][http://github.com/chrismichaels84]
+- [Andy Davies] [www.outstandy.com]
 - [All Contributors][link-contributors]
 
 ## License
