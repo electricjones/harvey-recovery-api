@@ -23,6 +23,7 @@ class SheetsJsonFeedBuilder
     public function updateJsonFile($destination_path)
     {
         $content = $this->getSheetContent();
+        $txt = $serial = serialize($content);
         $data = $this->parseSheetContent($content);
         $built = $this->buildJsonData($data);
         $this->saveJsonFile($built, $destination_path);
@@ -32,7 +33,7 @@ class SheetsJsonFeedBuilder
      * Fetches the data from the google sheet
      * @return array
      */
-    private function getSheetContent()
+    protected function getSheetContent()
     {
         return json_decode(
             str_replace('$', '', file_get_contents(
@@ -47,7 +48,7 @@ class SheetsJsonFeedBuilder
      * @param array $content
      * @return array
      */
-    private function parseSheetContent($content)
+    public function parseSheetContent($content)
     {
         $columns_of_interest = [
             'gsxalwaysdisplay' => 'always',
@@ -80,7 +81,7 @@ class SheetsJsonFeedBuilder
      * @param array $data
      * @return array
      */
-    private function buildJsonData(array $data)
+    public function buildJsonData(array $data)
     {
         $built = [];
         foreach ($data as $row) {
