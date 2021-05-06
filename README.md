@@ -1,3 +1,5 @@
+> This is old and broken. Please don't actually use it. I really just keep it around for sentimental reasons.
+
 # Harvey Recovery Status API
 A simple api to deliver personalized status reports for Hurricane Harvey recovery.
 
